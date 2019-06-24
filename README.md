@@ -27,8 +27,8 @@ This repository has teaching materials for a **3 hour**, hands-on workshop led a
 | Lessons            | Estimated Duration |
 |:------------------------|:----------|
 |Setting up | 15 min |
-|Tidyverse | 30 min |
-|ggplot2 | 30 min |
+|[Tidyverse](https://pilm-bioinformatics.github.io/pilmbc104-best-of-r/tidyverse.html) | 30 min |
+|[ggplot2](https://pilm-bioinformatics.github.io/pilmbc104-best-of-r/ggplot2.html) | 30 min |
 
 
 ### Dataset
