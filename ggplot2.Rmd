@@ -11,20 +11,24 @@ Adapted by **Lorena Pantano**. Original materials at [hbctraning](https://github
 
 Thanks them on Twitter for their work: @bioinfocore
 
-```{r}
-bp_oe = read_tsv(file = "data/gprofiler_results_Mov10oe.tsv") %>%
-    filter(domain == "BP") %>% 
-    dplyr::rename(GO_id = term.id, 
-                GO_term = term.name) %>% 
-  mutate(gene_ratio = overlap.size / query.size) 
-```
-
 
 ## Learning Objectives 
 
 * Explain the grammar of graphics syntax used by ggplot2
 * Determine how to plot different types of graphs with ggplot2 depending on the number and type of variables
 * Export plots for use outside of the R environment.
+
+## Prepare de data
+
+```{r}
+library(tidyverse)
+bp_oe = read_tsv(file = "gprofiler_results_Mov10oe.tsv") %>%
+    filter(domain == "BP") %>% 
+    dplyr::rename(GO_id = term.id, 
+                GO_term = term.name) %>% 
+  mutate(gene_ratio = overlap.size / query.size) 
+```
+
 
 ## Data Visualization with `ggplot2`
 
@@ -123,7 +127,7 @@ To modify the **size of the data points** we can use the `size` argument.
 
 We have decided that we want to change the size of all the data point to a uniform size instead of typing it to a numeric column in the input tibble. Add in the `size` argument by specifying a number for the size of the data point:
 
-```
+```{r}
 ggplot(bp_plot) +
   geom_point(aes(x = gene_ratio, y = GO_term, , color = p.value), 
              size = 2)

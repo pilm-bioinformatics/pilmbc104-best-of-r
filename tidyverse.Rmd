@@ -106,7 +106,8 @@ While the base R packages have perfectly fine methods for reading in data, the `
 
 ```{r}
 # Read in the functional analysis results
-functional_GO_results <- read_tsv(file = "data/gprofiler_results_Mov10oe.tsv")
+download.file("https://github.com/pilm-bioinformatics/pilmbc104-best-of-r/raw/master/data/gprofiler_results_Mov10oe.tsv")
+functional_GO_results <- read_tsv(file = "gprofiler_results_Mov10oe.tsv")
 
 # Take a look at the results
 functional_GO_results
