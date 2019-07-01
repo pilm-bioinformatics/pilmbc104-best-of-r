@@ -487,12 +487,14 @@ ggplot(bp_plot) +
 ## Resources
 
 Helpful packages to add additional functionality to ggplot2:
+
 * [cowplot](https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html)
 * [ggpubr](https://rpkgs.datanovia.com/ggpubr/index.html)
 * [bbplot](https://medium.com/bbc-visual-and-data-journalism/how-the-bbc-visual-and-data-journalism-team-works-with-graphics-in-r-ed0b35693535)
 * [ggrepel](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html)
 * [Fundamentals of Data Visualization](https://serialmentor.com/dataviz/) by [Claus 0. Wilke](https://github.com/clauswilke)
 
+***
 
 [Click here to go to next lesson](https://pilm-bioinformatics.github.io/pilmbc104-best-of-r/rmarkdown.html)
 
