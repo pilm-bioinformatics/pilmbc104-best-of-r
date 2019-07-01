@@ -288,7 +288,7 @@ If you would like to explore additional Tidyverse packages and functions, we hav
 
 ***
 
-[Click here to go to next lesson](https://hbctraining.github.io/Training-modules/Tidyverse_ggplot2/lessons/ggplot2.html)
+[Click here to go to next lesson](https://pilm-bioinformatics.github.io/pilmbc104-best-of-r/ggplot2.html)
 
 
 ---

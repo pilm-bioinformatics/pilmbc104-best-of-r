@@ -15,7 +15,7 @@ Full tutorial at https://rmarkdown.rstudio.com/authoring_quick_tour.html
 
 ## Render
 
-To render the Rmarkdown file to HTML or PDF, you can use the `knit` buttom or 
+To render the Rmarkdown file to HTML or PDF, you can use the `knit` button or 
 
 ```
 rmarkdown::render("input.Rmd")
@@ -61,3 +61,4 @@ Open `tidyverse.Rmd` and click `knit`.
 Then go to the `Console` and type `rmarkdown::render("ggplot2.Rmd")`.
 
 You should see two HTML files now.
+
