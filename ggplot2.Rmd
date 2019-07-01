@@ -22,7 +22,7 @@ Thanks them on Twitter for their work: @bioinfocore
 
 ```{r}
 library(tidyverse)
-bp_oe = read_tsv(file = "gprofiler_results_Mov10oe.tsv") %>%
+bp_oe = read_tsv(file = "data/gprofiler_results_Mov10oe.tsv") %>%
     filter(domain == "BP") %>% 
     dplyr::rename(GO_id = term.id, 
                 GO_term = term.name) %>% 

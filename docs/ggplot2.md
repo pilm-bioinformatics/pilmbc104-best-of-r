@@ -12,7 +12,17 @@ Adapted by **Lorena Pantano**. Original materials at [hbctraning](https://github
 Thanks them on Twitter for their work: @bioinfocore
 
 
+## Learning Objectives 
+
+* Explain the grammar of graphics syntax used by ggplot2
+* Determine how to plot different types of graphs with ggplot2 depending on the number and type of variables
+* Export plots for use outside of the R environment.
+
+## Prepare de data
+
+
 ```r
+library(tidyverse)
 bp_oe = read_tsv(file = "data/gprofiler_results_Mov10oe.tsv") %>%
     filter(domain == "BP") %>% 
     dplyr::rename(GO_id = term.id, 
@@ -40,12 +50,6 @@ bp_oe = read_tsv(file = "data/gprofiler_results_Mov10oe.tsv") %>%
 ## )
 ```
 
-
-## Learning Objectives 
-
-* Explain the grammar of graphics syntax used by ggplot2
-* Determine how to plot different types of graphs with ggplot2 depending on the number and type of variables
-* Export plots for use outside of the R environment.
 
 ## Data Visualization with `ggplot2`
 
@@ -159,11 +163,14 @@ To modify the **size of the data points** we can use the `size` argument.
 
 We have decided that we want to change the size of all the data point to a uniform size instead of typing it to a numeric column in the input tibble. Add in the `size` argument by specifying a number for the size of the data point:
 
-```
+
+```r
 ggplot(bp_plot) +
   geom_point(aes(x = gene_ratio, y = GO_term, , color = p.value), 
              size = 2)
 ```
+
+![](docs/ggplot2_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 > **Note:** The size of the points is personal preference, and you may need to play around with the parameter to decide which size is best. That seems a bit too small, so we can try out a slightly larger size. 
 
@@ -177,7 +184,7 @@ ggplot(bp_plot) +
              shape = "square")
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 
 Now we can start updating the plot to suit our preferences for how we want the data displayed. The labels on the x- and y-axis are also quite small and not very descriptive. To change their size and labeling, we need to add additional **theme layers**. The ggplot2 `theme()` system handles modification of non-data plot elements such as:
@@ -199,7 +206,7 @@ ggplot(bp_plot) +
   theme_bw()
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 ***Do the axis labels or the tick labels get any larger by changing themes?***
 
 Not in this case. But we can add arguments using `theme()` to change it ourselves. Since we are adding this layer on top (i.e later in sequence), any features we change will override what is set in the `theme_bw()`. Here we'll **increase the size of the axes labels to be 1.15 times the default size and the x-axis tick labels to be 1.15 times the default.** 
@@ -214,7 +221,7 @@ ggplot(bp_plot) +
         axis.title = element_text(size=rel(1.15)))
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 
 > **Note #1:** When modifying the size of text we often use the `rel()` function to specify the size we want relative to the default. We can also provide a numeric value as we did with the data point size, but it can be cumbersome if you don't know what the default font size is to begin with. 
@@ -240,7 +247,7 @@ library(RColorBrewer)
 display.brewer.all()
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 
 The output is separated into three sections based on the suggested palettes for sequential, qualitative, and diverging data. 
@@ -257,7 +264,7 @@ Since our adjusted p-values are sequential, we will choose from these palettes. 
 display.brewer.pal(6, "YlOrRd")
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 The yellow might be a bit too light, and we might not need so many different colors. Let's test with three different colors:
 
@@ -267,7 +274,7 @@ The yellow might be a bit too light, and we might not need so many different col
 display.brewer.pal(3, "YlOrRd")
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ```r
 # Define a palette
@@ -304,7 +311,7 @@ ggplot(bp_plot) +
   scale_color_gradientn(colors = mypalette)
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 This looks good, but we want to add better name for the legend and we want to make sure the legend title is centered and bold. To do this, we can add a `name` argument to `scale_color_gradientn()` and a new theme layer for the legend title.
 
@@ -327,7 +334,7 @@ ggplot(bp_plot) +
 	face="bold"))
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 
 So far we have explored many layers that can be added to any plot with the ggplot2 package. However, we haven't explored the different `geom`s available. The type of data you are plotting will determine the type of `geom` needed, but a nice summary of the main `geom`s is available on the [RStudio ggplot2 cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf).
@@ -340,7 +347,7 @@ ggplot(bp_plot) +
   geom_col(aes(x = GO_term, y = overlap.size))
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 This is a good base to start from, now let's start to customize. To add color to the bars, we can use the `fill` argument, and if we would like to add an outline color to the bars, we can use the `color` argument.
 
@@ -352,7 +359,7 @@ ggplot(bp_plot) +
            color = "black")
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 Then we can provide our theme preferences, give the plot a title, and label our axes:
 
@@ -369,7 +376,7 @@ ggplot(bp_plot) +
   labs(title = "DE genes per GO process", x = NULL, y =  "# DE genes")
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 Note that instead of using the functions `xlab()`, `ylab()`, and `ggtitle()`, we can provide all as arguments to the `labs()` function.
 
@@ -389,7 +396,7 @@ ggplot(bp_plot) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
 
 This is almost what we were looking for, but the labels are getting cut-off because the plotting area is too small. The `plot.margin` argument of the theme's `element_text()` function can be used to alter the plotting dimensions to make room for our labels.
@@ -410,7 +417,7 @@ ggplot(bp_plot) +
   theme(plot.margin = unit(c(1,1,1,3), "cm"))
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
 
 >**NOTE:** If we wanted to remove the space between the x-axis and the labels, we could add an additional layer for `scale_y_continuous(expand = c(0, 0))`, which would not expand the y-axis past the plotting limits.
@@ -474,7 +481,7 @@ ggplot(bp_plot) +
   ggtitle("Dotplot of top 30 significant GO terms")
 ```
 
-![](docs/ggplot2_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](docs/ggplot2_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
 
 
 ## Resources
@@ -485,6 +492,9 @@ Helpful packages to add additional functionality to ggplot2:
 * [bbplot](https://medium.com/bbc-visual-and-data-journalism/how-the-bbc-visual-and-data-journalism-team-works-with-graphics-in-r-ed0b35693535)
 * [ggrepel](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html)
 * [Fundamentals of Data Visualization](https://serialmentor.com/dataviz/) by [Claus 0. Wilke](https://github.com/clauswilke)
+
+
+[Click here to go to next lesson](https://pilm-bioinformatics.github.io/pilmbc104-best-of-r/rmarkdown.html)
 
 ---
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
