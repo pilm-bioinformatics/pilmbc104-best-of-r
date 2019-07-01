@@ -80,7 +80,6 @@ The functional analysis that we will focus on involves **gene ontology (GO) term
 	- cellular components (CC)
 	- molecular functions (MF)
 
-> ***NOTE:** If you haven't downloaded the data, right-click [here](data/gprofiler_results_Mov10oe.tsv) and save to the `data` folder.*
 
 ## Analysis goal and workflow
 
@@ -94,23 +93,30 @@ We are going to use the Tidyverse suite of tools to wrangle and visualize our da
 4. Order by significance (p-adjusted values)
 5. Rename columns to be more intuitive
 6. Create additional metrics for plotting (e.g. gene ratios)
-7. Plot results
+7. Separate columns
+8. Join tables
+9. Plot results
 
 ## Tidyverse tools
 
 While all of the tools in the Tidyverse suite are deserving of being explored in more depth, we are going to investigate more deeply the reading (`readr`), wrangling (`dplyr`), and plotting (`ggplot2`) tools.
 
-## 1. Read in the functional analysis results
+## 1. Read in the tables
 
 While the base R packages have perfectly fine methods for reading in data, the `readr` and `readxl` Tidyverse packages offer additional methods for reading in data. Let's read in our tab-delimited functional analysis results using `read_delim()`:
 
 ```{r}
+dir.create("data", showWarnings = F)
 # Read in the functional analysis results
-download.file("https://github.com/pilm-bioinformatics/pilmbc104-best-of-r/raw/master/data/gprofiler_results_Mov10oe.tsv")
-functional_GO_results <- read_tsv(file = "gprofiler_results_Mov10oe.tsv")
+download.file("https://github.com/pilm-bioinformatics/pilmbc104-best-of-r/raw/master/data/gprofiler_results_Mov10oe.tsv", "data/gprofiler_results_Mov10oe.tsv")
+functional_GO_results <- read_tsv(file = "data/gprofiler_results_Mov10oe.tsv")
+
+download.file("https://github.com/pilm-bioinformatics/pilmbc104-best-of-r/raw/master/data/Mov10oe_DE.csv", "data/Mov10oe_DE.csv")
+de_results <- read_csv(file = "data/Mov10oe_DE.csv")
 
 # Take a look at the results
 functional_GO_results
+de_results
 ```
 
 Notice that the results were automatically read in as a tibble and the output gives the number of rows, columns and the data type for each of the columns.
@@ -137,7 +143,7 @@ bp_oe <- functional_GO_results %>%
 head(bp_oe)
 ```
 
-Now we have returned only those rows with a `domain` of `BP`. **How have the dimensions of our results changed?**
+Now we have returned only those rows with a `domain` of `BP`.
 
 
 ## 3. Select only the columns needed for visualization
@@ -177,12 +183,12 @@ bp_oe %>%
 ```
 
 > **NOTE:** If you wanted to arrange in descending order, then you could have run the following instead:
-> ```r
-> # DO NOT RUN
-> # Order by adjusted p-value descending
-> bp_oe <- bp_oe %>%
->   arrange(desc(p.value))
-> ```
+
+```{r}
+# Order by adjusted p-value descending
+bp_oe <- bp_oe %>%
+  arrange(desc(p.value))
+```
 
 ## 5. Rename columns to be more intuitive
 
@@ -218,7 +224,55 @@ bp_oe %>%
 ```
 
 
-## 7. Plot results
+## 7. Separate columns in lines
+
+If you have a column that has multiple values, like `intersection` that all
+genes are together separatd by the character `,`.
+
+```{r}
+bp_oe %>% 
+    select(intersection, term.name) %>% 
+    separate_rows(intersection, sep=",")
+
+```
+
+Look at [`separete`](https://tidyr.tidyverse.org/reference/separate.html) function to split one column in multiples.
+
+## 8. Join tables
+
+`left_join` function allows two join to tables by one or multiple columns.
+
+If the name of the column is the same, the parameter looks like this:
+
+`by = "gene"`
+
+If the name of the column is different in both tables:
+
+`by = c("gene" = "gene_name")`
+
+If there are multiple columns to use:
+
+`by = c("chr", "position", "strand")`
+
+```{r}
+de_results %>% 
+    mutate(gene = tolower(X1))
+
+left_join(
+    bp_oe %>% 
+    select(intersection, term.name) %>% 
+    separate_rows(intersection, sep=","),
+    
+    de_results %>% 
+    mutate(gene = tolower(X1)),
+    
+    by = c("intersection" = "gene")
+)
+```
+
+Look at  [`right_join, inner_join, full_join`](https://dplyr.tidyverse.org/reference/join.html)
+
+## 9. Plot results
 
 Now that we have our results ready for plotting, we can use the [ggplot2](https://ggplot2.tidyverse.org) package to plot our results.
 
@@ -235,6 +289,7 @@ If you would like to explore additional Tidyverse packages and functions, we hav
 ***
 
 [Click here to go to next lesson](https://hbctraining.github.io/Training-modules/Tidyverse_ggplot2/lessons/ggplot2.html)
+
 
 ---
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*

@@ -98,7 +98,6 @@ The functional analysis that we will focus on involves **gene ontology (GO) term
 	- cellular components (CC)
 	- molecular functions (MF)
 
-> ***NOTE:** If you haven't downloaded the data, right-click [here](data/gprofiler_results_Mov10oe.tsv) and save to the `data` folder.*
 
 ## Analysis goal and workflow
 
@@ -112,19 +111,23 @@ We are going to use the Tidyverse suite of tools to wrangle and visualize our da
 4. Order by significance (p-adjusted values)
 5. Rename columns to be more intuitive
 6. Create additional metrics for plotting (e.g. gene ratios)
-7. Plot results
+7. Separate columns
+8. Join tables
+9. Plot results
 
 ## Tidyverse tools
 
 While all of the tools in the Tidyverse suite are deserving of being explored in more depth, we are going to investigate more deeply the reading (`readr`), wrangling (`dplyr`), and plotting (`ggplot2`) tools.
 
-## 1. Read in the functional analysis results
+## 1. Read in the tables
 
 While the base R packages have perfectly fine methods for reading in data, the `readr` and `readxl` Tidyverse packages offer additional methods for reading in data. Let's read in our tab-delimited functional analysis results using `read_delim()`:
 
 
 ```r
+dir.create("data", showWarnings = F)
 # Read in the functional analysis results
+download.file("https://github.com/pilm-bioinformatics/pilmbc104-best-of-r/raw/master/data/gprofiler_results_Mov10oe.tsv", "data/gprofiler_results_Mov10oe.tsv")
 functional_GO_results <- read_tsv(file = "data/gprofiler_results_Mov10oe.tsv")
 ```
 
@@ -145,6 +148,28 @@ functional_GO_results <- read_tsv(file = "data/gprofiler_results_Mov10oe.tsv")
 ##   term.name = col_character(),
 ##   relative.depth = col_double(),
 ##   intersection = col_character()
+## )
+```
+
+```r
+download.file("https://github.com/pilm-bioinformatics/pilmbc104-best-of-r/raw/master/data/Mov10oe_DE.csv", "data/Mov10oe_DE.csv")
+de_results <- read_csv(file = "data/Mov10oe_DE.csv")
+```
+
+```
+## Warning: Missing column names filled in: 'X1' [1]
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   X1 = col_character(),
+##   baseMean = col_double(),
+##   log2FoldChange = col_double(),
+##   lfcSE = col_double(),
+##   stat = col_double(),
+##   pvalue = col_double(),
+##   padj = col_double()
 ## )
 ```
 
@@ -170,6 +195,27 @@ functional_GO_results
 ## # … with 3,634 more rows, and 8 more variables: recall <dbl>,
 ## #   precision <dbl>, term.id <chr>, domain <chr>, subgraph.number <dbl>,
 ## #   term.name <chr>, relative.depth <dbl>, intersection <chr>
+```
+
+```r
+de_results
+```
+
+```
+## # A tibble: 23,368 x 7
+##    X1          baseMean log2FoldChange  lfcSE   stat     pvalue       padj
+##    <chr>          <dbl>          <dbl>  <dbl>  <dbl>      <dbl>      <dbl>
+##  1 1/2-SBSRNA4   45.7          0.268   0.188   1.42  0.154       0.264    
+##  2 A1BG          61.1          0.209   0.174   1.20  0.229       0.357    
+##  3 A1BG-AS1     176.          -0.0519  0.124  -0.418 0.676       0.781    
+##  4 A1CF           0.238        0.0130  0.0491  0.265 0.791      NA        
+##  5 A2LD1         89.6          0.345   0.160   2.16  0.0310      0.0722   
+##  6 A2M            5.86        -0.274   0.179  -1.53  0.126       0.226    
+##  7 A2ML1          2.42         0.240   0.137   1.75  0.0809     NA        
+##  8 A2MP1          1.32         0.0811  0.101   0.804 0.421      NA        
+##  9 A4GALT        64.5          0.798   0.172   4.65  0.00000336  0.0000240
+## 10 A4GNT          0.191        0.00952 0.0421  0.226 0.821      NA        
+## # … with 23,358 more rows
 ```
 
 Notice that the results were automatically read in as a tibble and the output gives the number of rows, columns and the data type for each of the columns.
@@ -212,7 +258,7 @@ head(bp_oe)
 ## #   intersection <chr>
 ```
 
-Now we have returned only those rows with a `domain` of `BP`. **How have the dimensions of our results changed?**
+Now we have returned only those rows with a `domain` of `BP`.
 
 
 ## 3. Select only the columns needed for visualization
@@ -309,12 +355,13 @@ bp_oe %>%
 ```
 
 > **NOTE:** If you wanted to arrange in descending order, then you could have run the following instead:
-> ```r
-> # DO NOT RUN
-> # Order by adjusted p-value descending
-> bp_oe <- bp_oe %>%
->   arrange(desc(p.value))
-> ```
+
+
+```r
+# Order by adjusted p-value descending
+bp_oe <- bp_oe %>%
+  arrange(desc(p.value))
+```
 
 ## 5. Rename columns to be more intuitive
 
@@ -333,18 +380,18 @@ bp_oe %>%
 
 ```
 ## # A tibble: 1,102 x 2
-##    GO_id      GO_term                                                      
-##    <chr>      <chr>                                                        
-##  1 GO:0032606 type I interferon production                                 
-##  2 GO:0032479 regulation of type I interferon production                   
-##  3 GO:0032480 negative regulation of type I interferon production          
-##  4 GO:0032481 positive regulation of type I interferon production          
-##  5 GO:0010644 cell communication by electrical coupling                    
-##  6 GO:0086064 cell communication by electrical coupling involved in cardia…
-##  7 GO:0035904 aorta development                                            
-##  8 GO:0034199 activation of protein kinase A activity                      
-##  9 GO:0050852 T cell receptor signaling pathway                            
-## 10 GO:0046653 tetrahydrofolate metabolic process                           
+##    GO_id      GO_term                                                     
+##    <chr>      <chr>                                                       
+##  1 GO:0034199 activation of protein kinase A activity                     
+##  2 GO:0043558 regulation of translational initiation in response to stress
+##  3 GO:0051031 tRNA transport                                              
+##  4 GO:0006370 7-methylguanosine mRNA capping                              
+##  5 GO:0072666 establishment of protein localization to vacuole            
+##  6 GO:0001961 positive regulation of cytokine-mediated signaling pathway  
+##  7 GO:1901654 response to ketone                                          
+##  8 GO:0033044 regulation of chromosome organization                       
+##  9 GO:0001934 positive regulation of protein phosphorylation              
+## 10 GO:1903008 organelle disassembly                                       
 ## # … with 1,092 more rows
 ```
 
@@ -371,21 +418,123 @@ bp_oe %>%
 ## # A tibble: 1,102 x 3
 ##    gene_ratio overlap.size query.size
 ##         <dbl>        <dbl>      <dbl>
-##  1    0.00889           52       5850
-##  2    0.00889           52       5850
-##  3    0.00359           21       5850
-##  4    0.00581           34       5850
-##  5    0.00274           16       5850
-##  6    0.00239           14       5850
-##  7    0.00427           25       5850
-##  8    0.00188           11       5850
-##  9    0.0121            71       5850
-## 10    0.00205           12       5850
+##  1    0.00188           11       5850
+##  2    0.00188           11       5850
+##  3    0.00308           18       5850
+##  4    0.00308           18       5850
+##  5    0.00308           18       5850
+##  6    0.00308           18       5850
+##  7    0.0120            70       5850
+##  8    0.00974           57       5850
+##  9    0.0528           309       5850
+## 10    0.00786           46       5850
 ## # … with 1,092 more rows
 ```
 
 
-## 7. Plot results
+## 7. Separate columns in lines
+
+If you have a column that has multiple values, like `intersection` that all
+genes are together separatd by the character `,`.
+
+
+```r
+bp_oe %>% 
+    select(intersection, term.name) %>% 
+    separate_rows(intersection, sep=",")
+```
+
+```
+## # A tibble: 361,143 x 2
+##    intersection term.name                              
+##    <chr>        <chr>                                  
+##  1 prkar2b      activation of protein kinase A activity
+##  2 prkaca       activation of protein kinase A activity
+##  3 prkar1a      activation of protein kinase A activity
+##  4 prkar2a      activation of protein kinase A activity
+##  5 adcy7        activation of protein kinase A activity
+##  6 prkacb       activation of protein kinase A activity
+##  7 adcy9        activation of protein kinase A activity
+##  8 prkacg       activation of protein kinase A activity
+##  9 adcy5        activation of protein kinase A activity
+## 10 adcy6        activation of protein kinase A activity
+## # … with 361,133 more rows
+```
+
+Look at [`separete`](https://tidyr.tidyverse.org/reference/separate.html) function to split one column in multiples.
+
+## 8. Join tables
+
+`left_join` function allows two join to tables by one or multiple columns.
+
+If the name of the column is the same, the parameter looks like this:
+
+`by = "gene"`
+
+If the name of the column is different in both tables:
+
+`by = c("gene" = "gene_name")`
+
+If there are multiple columns to use:
+
+`by = c("chr", "position", "strand")`
+
+
+```r
+de_results %>% 
+    mutate(gene = tolower(X1))
+```
+
+```
+## # A tibble: 23,368 x 8
+##    X1       baseMean log2FoldChange  lfcSE   stat   pvalue     padj gene   
+##    <chr>       <dbl>          <dbl>  <dbl>  <dbl>    <dbl>    <dbl> <chr>  
+##  1 1/2-SBS…   45.7          0.268   0.188   1.42   1.54e-1  2.64e-1 1/2-sb…
+##  2 A1BG       61.1          0.209   0.174   1.20   2.29e-1  3.57e-1 a1bg   
+##  3 A1BG-AS1  176.          -0.0519  0.124  -0.418  6.76e-1  7.81e-1 a1bg-a…
+##  4 A1CF        0.238        0.0130  0.0491  0.265  7.91e-1 NA       a1cf   
+##  5 A2LD1      89.6          0.345   0.160   2.16   3.10e-2  7.22e-2 a2ld1  
+##  6 A2M         5.86        -0.274   0.179  -1.53   1.26e-1  2.26e-1 a2m    
+##  7 A2ML1       2.42         0.240   0.137   1.75   8.09e-2 NA       a2ml1  
+##  8 A2MP1       1.32         0.0811  0.101   0.804  4.21e-1 NA       a2mp1  
+##  9 A4GALT     64.5          0.798   0.172   4.65   3.36e-6  2.40e-5 a4galt 
+## 10 A4GNT       0.191        0.00952 0.0421  0.226  8.21e-1 NA       a4gnt  
+## # … with 23,358 more rows
+```
+
+```r
+left_join(
+    bp_oe %>% 
+    select(intersection, term.name) %>% 
+    separate_rows(intersection, sep=","),
+    
+    de_results %>% 
+    mutate(gene = tolower(X1)),
+    
+    by = c("intersection" = "gene")
+)
+```
+
+```
+## # A tibble: 361,143 x 9
+##    intersection term.name X1    baseMean log2FoldChange  lfcSE  stat
+##    <chr>        <chr>     <chr>    <dbl>          <dbl>  <dbl> <dbl>
+##  1 prkar2b      activati… PRKA…     978.         -0.255 0.0667 -3.82
+##  2 prkaca       activati… PRKA…    2758.         -0.415 0.0655 -6.34
+##  3 prkar1a      activati… PRKA…    6793.         -0.169 0.0422 -4.00
+##  4 prkar2a      activati… PRKA…    1469.         -0.457 0.0600 -7.61
+##  5 adcy7        activati… ADCY7     311.          0.534 0.111   4.80
+##  6 prkacb       activati… PRKA…    1157.         -0.528 0.0669 -7.90
+##  7 adcy9        activati… ADCY9     923.          0.179 0.0667  2.68
+##  8 prkacg       activati… PRKA…     105.         -0.679 0.152  -4.47
+##  9 adcy5        activati… ADCY5     138.          0.501 0.135   3.71
+## 10 adcy6        activati… ADCY6    1351.          0.210 0.0620  3.39
+## # … with 361,133 more rows, and 2 more variables: pvalue <dbl>, padj <dbl>
+```
+
+Look at  [`right_join, inner_join, full_join`](https://dplyr.tidyverse.org/reference/join.html)
+
+## 9. Plot results
 
 Now that we have our results ready for plotting, we can use the [ggplot2](https://ggplot2.tidyverse.org) package to plot our results.
 
@@ -402,6 +551,7 @@ If you would like to explore additional Tidyverse packages and functions, we hav
 ***
 
 [Click here to go to next lesson](https://hbctraining.github.io/Training-modules/Tidyverse_ggplot2/lessons/ggplot2.html)
+
 
 ---
 *This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
